@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.0 (January 7, 2019)
+
+### Fixed
+
+- Fix order of variable assignments in scss (again)
+
 ## 3.0.0 rc 26 (January 3, 2019)
 
 ### Added
