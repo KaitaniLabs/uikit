@@ -74,7 +74,7 @@ const inverseTemplate = `    @include hook-inverse-component-base();
     @include hook-inverse-component-utility();`;
 
 /* First Step: Go through all files */
-Promise.all(glob.sync('src/less/**/*.less').map(file => {
+glob.sync('src/less/**/*.less').forEach(file => {
 
     const data = fs.readFileSync(file, 'utf8');
     /* replace all LESS stuff with SCSS */
@@ -131,28 +131,28 @@ Promise.all(glob.sync('src/less/**/*.less').map(file => {
 
     return write(file.replace(/less/g, 'scss').replace('.theme.', '-theme.'), scssData);
 
-})).then(() => {
-    /* Second Step write all new needed files for SASS */
+})
 
-    /* write mixins into new file */
-    const mixins_theme = Object.keys(themeMixins).map(function (key) { return themeMixins[key]; });
-    write('src/scss/mixins-theme.scss', mixins_theme.join('\n'));
+/* Second Step write all new needed files for SASS */
 
-    const mixins_core = Object.keys(coreMixins).map(function (key) { return coreMixins[key]; });
-    write('src/scss/mixins.scss', mixins_core.join('\n'));
+/* write mixins into new file */
+const mixins_theme = Object.keys(themeMixins).map(function (key) { return themeMixins[key]; });
+write('src/scss/mixins-theme.scss', mixins_theme.join('\n'));
 
-    /* write core variables */
-    const compactCoreVar = new Set();
-    Object.keys(coreVar).map(key => getAllDependencies(coreVar, key).forEach(dependency => compactCoreVar.add(dependency)));
+const mixins_core = Object.keys(coreMixins).map(function (key) { return coreMixins[key]; });
+write('src/scss/mixins.scss', mixins_core.join('\n'));
 
-    write('src/scss/variables.scss', Array.from(compactCoreVar).join('\n'));
+/* write core variables */
+const compactCoreVar = new Set();
+Object.keys(coreVar).map(key => getAllDependencies(coreVar, key).forEach(dependency => compactCoreVar.add(dependency)));
 
-    /* write theme variables */
-    const compactThemeVar = new Set();
-    Object.keys(themeVar).map(key => getAllDependencies(themeVar, key).forEach(dependency => compactThemeVar.add(dependency)));
+write('src/scss/variables.scss', Array.from(compactCoreVar).join('\n'));
 
-    write('src/scss/variables-theme.scss', Array.from(compactThemeVar).join('\n'));
-});
+/* write theme variables */
+const compactThemeVar = new Set();
+Object.keys(themeVar).map(key => getAllDependencies(themeVar, key).forEach(dependency => compactThemeVar.add(dependency)));
+
+write('src/scss/variables-theme.scss', Array.from(compactThemeVar).join('\n'));
 
 /*
  * recursive function to get a dependencie Set which is ordered so that no depencies exist to a later on entry
